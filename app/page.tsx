@@ -1,65 +1,167 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+import React, { useState, useEffect } from 'react';
+
+const phrases = [
+  "", 
+  "please",
+  "pleaseee",
+  "sure najud?",
+  "wehhhh",
+  "di na mahangyo?",
+  "di najud?",
+  "tarong ba?",
+];
+
+export default function ValentinePage() {
+  const [noCount, setNoCount] = useState(0);
+  const [yesPressed, setYesPressed] = useState(false);
+  const [noButtonPos, setNoButtonPos] = useState({ x: 0, y: 0 });
+  const [isMoved, setIsMoved] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const yesButtonSize = noCount * 25 + 20; 
+  const noButtonSize = Math.max(18 - noCount * 1.5, 6);
+
+  // The No button will be removed once we've clicked past the last phrase
+  const showNoButton = noCount < phrases.length;
+
+  const handleNoClick = () => {
+    setNoCount((prev) => prev + 1);
+    
+    const padding = 100; 
+    const maxWidth = window.innerWidth - padding;
+    const maxHeight = window.innerHeight - padding;
+    
+    const randomX = Math.max(padding, Math.random() * maxWidth);
+    const randomY = Math.max(padding, Math.random() * maxHeight);
+    
+    setNoButtonPos({ x: randomX, y: randomY });
+    setIsMoved(true);
+  };
+
+  if (yesPressed) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-pink-100 text-center p-6">
+        <img 
+          src="/picture/PROFILE.png" 
+          alt="celebration" 
+          className="w-full max-w-[500px] mb-4 rounded-xl shadow-2xl z-10"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <h1 className="text-4xl md:text-6xl font-bold text-red-600 animate-bounce z-10">
+          Yay! See you on the 14th! ❤️
+        </h1>
+      </div>
+    );
+  }
+
+  if (!mounted) return null;
+
+  return (
+    <main className="flex flex-col items-center justify-center h-screen w-full overflow-hidden relative p-4 bg-pink-50">
+      
+      {/* BACKGROUND IMAGE */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="/picture/1368.png" 
+          alt="background" 
+          className="w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-black/10"></div>
+      </div>
+
+      {/* FLOATING HEARTS */}
+      <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+        {[...Array(25)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute text-red-400 opacity-60 animate-float-up"
+            style={{
+              left: `${Math.random() * 100}%`,
+              bottom: `-50px`,
+              fontSize: `${Math.random() * 20 + 20}px`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${Math.random() * 8 + 4}s`,
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            ❤️
+          </div>
+        ))}
+      </div>
+
+      {/* TEXT CONTENT */}
+      <div className="text-center z-20 mb-12 px-4 w-full relative">
+        <h1 className="text-4xl md:text-7xl font-bold text-black drop-shadow-[0_4px_12px_rgba(255,255,255,1)]">
+          Would you be my Valentine?
+        </h1>
+        
+        <p className="text-2xl md:text-4xl text-black mt-6 font-bold italic min-h-[50px] drop-shadow-[0_2px_10px_rgba(255,255,255,1)] uppercase tracking-wide transition-all">
+          {/* Logic: Cycle through phrases, then show "please 🥺" once button is gone */}
+          {noCount > 0 && noCount < phrases.length 
+            ? phrases[noCount] 
+            : noCount >= phrases.length 
+              ? "please 🥺" 
+              : ""
+          }
+        </p>
+      </div>
+
+      {/* BUTTON CONTAINER */}
+      <div className="flex flex-col md:flex-row items-center justify-center gap-10 z-20 w-full relative">
+        <button
+          className="bg-green-500 hover:bg-green-600 text-white font-black rounded-full transition-all duration-300 shadow-[0_10px_40px_rgba(0,0,0,0.3)] active:scale-95 whitespace-nowrap"
+          style={{ 
+            fontSize: `${yesButtonSize}px`, 
+            padding: `${yesButtonSize / 2}px ${yesButtonSize}px`,
+            maxWidth: '95vw',
+            lineHeight: '1'
+          }}
+          onClick={() => setYesPressed(true)}
+        >
+          Yes
+        </button>
+
+        {showNoButton && (
+          <button
+            onClick={handleNoClick}
+            className={`bg-red-500 hover:bg-red-700 text-white font-bold rounded-full transition-all duration-100 shadow-xl ${isMoved ? 'fixed' : 'relative'}`}
+            style={isMoved ? { 
+              left: `${noButtonPos.x}px`, 
+              top: `${noButtonPos.y}px`,
+              fontSize: `${noButtonSize}px`,
+              padding: `${noButtonSize / 2}px ${noButtonSize}px`,
+              transform: 'translate(-50%, -50%)',
+              zIndex: 50
+            } : {
+              fontSize: `${noButtonSize}px`,
+              padding: `${noButtonSize / 2}px ${noButtonSize}px`
+            }}
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            No
+          </button>
+        )}
+      </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes floatUp {
+          0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+          20% { opacity: 0.8; }
+          100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+        .animate-float-up {
+          animation: floatUp linear infinite;
+        }
+        body {
+          overflow: hidden;
+          margin: 0;
+          height: 100vh;
+          width: 100vw;
+        }
+      `}} />
+    </main>
   );
 }
