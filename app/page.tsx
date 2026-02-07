@@ -50,7 +50,7 @@ export default function ValentinePage() {
         <img 
           src="/picture/PROFILE.png" 
           alt="celebration" 
-          className="w-full max-w-[500px] mb-4 rounded-xl shadow-2xl z-10"
+          className="w-full max-w-125 mb-4 rounded-xl shadow-2xl z-10"
         />
         <h1 className="text-4xl md:text-6xl font-bold text-red-600 animate-bounce z-10">
           Yay! See you on the 14th! ❤️
