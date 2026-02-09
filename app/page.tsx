@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import confetti from 'canvas-confetti';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const phrases = [
   "", 
@@ -24,103 +26,96 @@ export default function ValentinePage() {
     setMounted(true);
   }, []);
 
-  const yesButtonSize = noCount * 25 + 20; 
-  const noButtonSize = Math.max(18 - noCount * 1.5, 6);
-
-  // The No button will be removed once we've clicked past the last phrase
-  const showNoButton = noCount < phrases.length;
+  const handleYes = () => {
+    setYesPressed(true);
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#ff0000', '#ff69b4', '#ffffff']
+    });
+  };
 
   const handleNoClick = () => {
     setNoCount((prev) => prev + 1);
-    
-    const padding = 100; 
-    const maxWidth = window.innerWidth - padding;
-    const maxHeight = window.innerHeight - padding;
-    
-    const randomX = Math.max(padding, Math.random() * maxWidth);
-    const randomY = Math.max(padding, Math.random() * maxHeight);
-    
+    const padding = 80;
+    const randomX = Math.random() * (window.innerWidth - padding * 2) + padding;
+    const randomY = Math.random() * (window.innerHeight - padding * 2) + padding;
     setNoButtonPos({ x: randomX, y: randomY });
     setIsMoved(true);
   };
 
-  if (yesPressed) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-pink-100 text-center p-6">
-        <img 
-          src="/picture/PROFILE.png" 
-          alt="celebration" 
-          className="w-full max-w-125 mb-4 rounded-xl shadow-2xl z-10"
-        />
-        <h1 className="text-4xl md:text-6xl font-bold text-red-600 animate-bounce z-10">
-          Yay! See you on the 14th! ❤️
-        </h1>
-      </div>
-    );
-  }
+  // DYNAMIC SIZING LOGIC
+  const getYesStyles = () => {
+    // Check if we are on the last question "tarong ba?" (index 7) or beyond
+    const isLastStage = noCount >= phrases.length - 1;
+    const isFinalPlea = noCount >= phrases.length;
+
+    if (isLastStage || isFinalPlea) {
+      return {
+        fontSize: 'clamp(40px, 15vw, 120px)', // Huge on PC, fits on Mobile
+        padding: 'clamp(20px, 10vh, 80px) clamp(40px, 20vw, 120px)',
+        width: '90vw',
+        height: 'auto'
+      };
+    }
+
+    // Standard growth for early stages
+    const size = noCount * 12 + 18;
+    return {
+      fontSize: `${size}px`,
+      padding: `${size / 2}px ${size}px`,
+      maxWidth: '80vw'
+    };
+  };
+
+  const showNoButton = noCount < phrases.length;
 
   if (!mounted) return null;
 
-  return (
-    <main className="flex flex-col items-center justify-center h-screen w-full overflow-hidden relative p-4 bg-pink-50">
-      
-      {/* BACKGROUND IMAGE */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="/picture/1368.png" 
-          alt="background" 
-          className="w-full h-full object-cover object-center"
+  if (yesPressed) {
+    return (
+      <main className="flex flex-col items-center justify-center h-screen bg-pink-100 text-center p-6">
+        <motion.img 
+          initial={{ scale: 0 }} animate={{ scale: 1 }}
+          src="https://media.giphy.com/media/KztT2c4u8mYYUiCiS3/giphy.gif" 
+          className="w-64 md:w-96 mb-4 rounded-xl shadow-2xl z-10"
         />
-        <div className="absolute inset-0 bg-black/10"></div>
+        <h1 className="text-4xl md:text-6xl font-bold text-red-600 animate-bounce">
+          Yay! See you on the 14th! ❤️
+        </h1>
+      </main>
+    );
+  }
+
+  return (
+    <main className="relative flex flex-col items-center justify-center h-screen w-full overflow-hidden bg-pink-50">
+      
+      <div className="absolute inset-0 z-0">
+        <img src="/picture/1368.png" className="w-full h-full object-cover" alt="bg" />
+        <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      {/* FLOATING HEARTS */}
-      <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-        {[...Array(25)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute text-red-400 opacity-60 animate-float-up"
-            style={{
-              left: `${Math.random() * 100}%`,
-              bottom: `-50px`,
-              fontSize: `${Math.random() * 20 + 20}px`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${Math.random() * 8 + 4}s`,
-            }}
-          >
-            ❤️
-          </div>
-        ))}
-      </div>
-
-      {/* TEXT CONTENT */}
-      <div className="text-center z-20 mb-12 px-4 w-full relative">
-        <h1 className="text-4xl md:text-7xl font-bold text-black drop-shadow-[0_4px_12px_rgba(255,255,255,1)]">
+      <div className="z-20 text-center px-4 mb-10 w-full max-w-4xl">
+        <h1 className="text-4xl md:text-7xl font-bold text-black drop-shadow-[0_2px_10px_rgba(255,255,255,1)]">
           Would you be my Valentine?
         </h1>
-        
-        <p className="text-2xl md:text-4xl text-black mt-6 font-bold italic min-h-[50px] drop-shadow-[0_2px_10px_rgba(255,255,255,1)] uppercase tracking-wide transition-all">
-          {/* Logic: Cycle through phrases, then show "please 🥺" once button is gone */}
-          {noCount > 0 && noCount < phrases.length 
-            ? phrases[noCount] 
-            : noCount >= phrases.length 
-              ? "please 🥺" 
-              : ""
-          }
-        </p>
+        <AnimatePresence mode="wait">
+          <motion.p 
+            key={noCount}
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            className="text-2xl md:text-4xl text-black mt-6 font-bold italic drop-shadow-[0_2px_10px_rgba(255,255,255,1)]"
+          >
+            {noCount >= phrases.length ? "please 🥺" : phrases[noCount]}
+          </motion.p>
+        </AnimatePresence>
       </div>
 
-      {/* BUTTON CONTAINER */}
-      <div className="flex flex-col md:flex-row items-center justify-center gap-10 z-20 w-full relative">
+      <div className="flex flex-col items-center justify-center gap-6 z-20 w-full px-4">
         <button
-          className="bg-green-500 hover:bg-green-600 text-white font-black rounded-full transition-all duration-300 shadow-[0_10px_40px_rgba(0,0,0,0.3)] active:scale-95 whitespace-nowrap"
-          style={{ 
-            fontSize: `${yesButtonSize}px`, 
-            padding: `${yesButtonSize / 2}px ${yesButtonSize}px`,
-            maxWidth: '95vw',
-            lineHeight: '1'
-          }}
-          onClick={() => setYesPressed(true)}
+          onClick={handleYes}
+          className="bg-green-500 hover:bg-green-600 text-white font-black rounded-full transition-all duration-500 shadow-2xl active:scale-95 flex items-center justify-center text-center"
+          style={getYesStyles()}
         >
           Yes
         </button>
@@ -128,18 +123,12 @@ export default function ValentinePage() {
         {showNoButton && (
           <button
             onClick={handleNoClick}
-            className={`bg-red-500 hover:bg-red-700 text-white font-bold rounded-full transition-all duration-100 shadow-xl ${isMoved ? 'fixed' : 'relative'}`}
+            className={`bg-red-500 hover:bg-red-700 text-white font-bold rounded-full shadow-xl transition-all duration-75 ${isMoved ? 'fixed' : 'relative'}`}
             style={isMoved ? { 
-              left: `${noButtonPos.x}px`, 
-              top: `${noButtonPos.y}px`,
-              fontSize: `${noButtonSize}px`,
-              padding: `${noButtonSize / 2}px ${noButtonSize}px`,
-              transform: 'translate(-50%, -50%)',
-              zIndex: 50
-            } : {
-              fontSize: `${noButtonSize}px`,
-              padding: `${noButtonSize / 2}px ${noButtonSize}px`
-            }}
+              left: `${noButtonPos.x}px`, top: `${noButtonPos.y}px`,
+              padding: '12px 24px', transform: 'translate(-50%, -50%)',
+              transition: 'none', fontSize: '16px', zIndex: 50
+            } : { padding: '12px 24px', fontSize: '16px' }}
           >
             No
           </button>
@@ -152,15 +141,8 @@ export default function ValentinePage() {
           20% { opacity: 0.8; }
           100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
         }
-        .animate-float-up {
-          animation: floatUp linear infinite;
-        }
-        body {
-          overflow: hidden;
-          margin: 0;
-          height: 100vh;
-          width: 100vw;
-        }
+        .animate-float-up { animation: floatUp linear infinite; }
+        body { overflow: hidden; touch-action: manipulation; }
       `}} />
     </main>
   );
