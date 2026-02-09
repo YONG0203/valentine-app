@@ -45,22 +45,19 @@ export default function ValentinePage() {
     setIsMoved(true);
   };
 
-  // DYNAMIC SIZING LOGIC
   const getYesStyles = () => {
-    // Check if we are on the last question "tarong ba?" (index 7) or beyond
     const isLastStage = noCount >= phrases.length - 1;
     const isFinalPlea = noCount >= phrases.length;
 
     if (isLastStage || isFinalPlea) {
       return {
-        fontSize: 'clamp(40px, 15vw, 120px)', // Huge on PC, fits on Mobile
-        padding: 'clamp(20px, 10vh, 80px) clamp(40px, 20vw, 120px)',
+        fontSize: 'clamp(40px, 15vw, 100px)',
+        padding: 'clamp(20px, 8vh, 60px) clamp(40px, 15vw, 100px)',
         width: '90vw',
         height: 'auto'
       };
     }
 
-    // Standard growth for early stages
     const size = noCount * 12 + 18;
     return {
       fontSize: `${size}px`,
@@ -75,13 +72,32 @@ export default function ValentinePage() {
 
   if (yesPressed) {
     return (
-      <main className="flex flex-col items-center justify-center h-screen bg-pink-100 text-center p-6">
+      <main className="relative flex flex-col items-center justify-center h-screen bg-pink-100 text-center p-6 overflow-hidden">
+        {/* Floating Hearts Background for Success Screen */}
+        <div className="absolute inset-0 pointer-events-none">
+          {[...Array(30)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute text-red-500 opacity-40 animate-float-up"
+              style={{
+                left: `${Math.random() * 100}%`,
+                bottom: `-50px`,
+                fontSize: `${Math.random() * 20 + 20}px`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${Math.random() * 6 + 4}s`,
+              }}
+            >
+              ❤️
+            </div>
+          ))}
+        </div>
+
         <motion.img 
           initial={{ scale: 0 }} animate={{ scale: 1 }}
-          src="https://media.giphy.com/media/KztT2c4u8mYYUiCiS3/giphy.gif" 
+          src="/picture/PROFILE.png" alt="profile"
           className="w-64 md:w-96 mb-4 rounded-xl shadow-2xl z-10"
         />
-        <h1 className="text-4xl md:text-6xl font-bold text-red-600 animate-bounce">
+        <h1 className="text-4xl md:text-6xl font-bold text-red-600 animate-bounce z-10">
           Yay! See you on the 14th! ❤️
         </h1>
       </main>
@@ -91,24 +107,46 @@ export default function ValentinePage() {
   return (
     <main className="relative flex flex-col items-center justify-center h-screen w-full overflow-hidden bg-pink-50">
       
-      <div className="absolute inset-0 z-0">
-        <img src="/picture/1368.png" className="w-full h-full object-cover" alt="bg" />
-        <div className="absolute inset-0 bg-black/20" />
+      {/* FLOATING HEARTS EVERYWHERE */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {[...Array(40)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute text-red-300 opacity-50 animate-float-up"
+            style={{
+              left: `${Math.random() * 100}%`,
+              bottom: `-10%`,
+              fontSize: `${Math.random() * 30 + 10}px`,
+              animationDelay: `${Math.random() * 10}s`,
+              animationDuration: `${Math.random() * 10 + 5}s`,
+            }}
+          >
+            ❤️
+          </div>
+        ))}
       </div>
 
-      <div className="z-20 text-center px-4 mb-10 w-full max-w-4xl">
-        <h1 className="text-4xl md:text-7xl font-bold text-black drop-shadow-[0_2px_10px_rgba(255,255,255,1)]">
-          Would you be my Valentine?
-        </h1>
-        <AnimatePresence mode="wait">
-          <motion.p 
-            key={noCount}
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            className="text-2xl md:text-4xl text-black mt-6 font-bold italic drop-shadow-[0_2px_10px_rgba(255,255,255,1)]"
-          >
-            {noCount >= phrases.length ? "please 🥺" : phrases[noCount]}
-          </motion.p>
-        </AnimatePresence>
+      <div className="z-10 flex flex-col items-center mb-10">
+        <motion.img 
+          initial={{ scale: 0 }} animate={{ scale: 1 }}
+          src="/picture/MING.png" alt="cat"
+          className="w-48 md:w-80 mb-6 rounded-xl shadow-lg"
+        />
+        
+        <div className="text-center px-4 w-full max-w-4xl">
+          <h1 className="text-4xl md:text-7xl font-bold text-black drop-shadow-[0_2px_10px_rgba(255,255,255,1)]">
+            Would you be my Valentine?
+          </h1>
+          <AnimatePresence mode="wait">
+            <motion.p 
+              key={noCount}
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              className="text-2xl md:text-4xl text-black mt-6 font-bold italic drop-shadow-[0_2px_10px_rgba(255,255,255,1)]"
+            >
+              {noCount >= phrases.length ? "please 🥺" : phrases[noCount]}
+            </motion.p>
+          </AnimatePresence>
+        </div>
       </div>
 
       <div className="flex flex-col items-center justify-center gap-6 z-20 w-full px-4">
@@ -138,11 +176,12 @@ export default function ValentinePage() {
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes floatUp {
           0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-          20% { opacity: 0.8; }
-          100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
         }
         .animate-float-up { animation: floatUp linear infinite; }
-        body { overflow: hidden; touch-action: manipulation; }
+        body { overflow: hidden; touch-action: manipulation; margin: 0; }
       `}} />
     </main>
   );
