@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 
 const phrases = [
-  "", 
+  "",
   "please",
   "pleaseee",
   "sure najud?",
@@ -24,9 +25,11 @@ export default function ValentinePage() {
 
   useEffect(() => {
     setMounted(true);
+    // Initialize EmailJS
+    emailjs.init("gWbLC9N8WnVWcg0sj");
   }, []);
 
-  const handleYes = () => {
+  const handleYes = async () => {
     setYesPressed(true);
     confetti({
       particleCount: 150,
@@ -34,6 +37,23 @@ export default function ValentinePage() {
       origin: { y: 0.6 },
       colors: ['#ff0000', '#ff69b4', '#ffffff']
     });
+
+    // --- EMAIL NOTIFICATION ---
+    const serviceId = 'service_rfvf0la'; 
+    const templateId = 'template_gl29m7g'; 
+    const publicKey = 'gWbLC9N8WnVWcg0sj';
+
+    const templateParams = {
+      message: 'She said YES! ❤️',
+      time: new Date().toLocaleString(),
+    };
+
+    try {
+      await emailjs.send(serviceId, templateId, templateParams, publicKey);
+      console.log('Notification sent!');
+    } catch (error: any) {
+      console.error('Email failed:', error?.text || "Check EmailJS setup");
+    }
   };
 
   const handleNoClick = () => {
@@ -47,9 +67,7 @@ export default function ValentinePage() {
 
   const getYesStyles = () => {
     const isLastStage = noCount >= phrases.length - 1;
-    const isFinalPlea = noCount >= phrases.length;
-
-    if (isLastStage || isFinalPlea) {
+    if (isLastStage) {
       return {
         fontSize: 'clamp(40px, 15vw, 100px)',
         padding: 'clamp(20px, 8vh, 60px) clamp(40px, 15vw, 100px)',
@@ -66,19 +84,17 @@ export default function ValentinePage() {
     };
   };
 
-  const showNoButton = noCount < phrases.length;
+  // Restored: Changed this to true so the button never disappears
+  const showNoButton = true;
 
   if (!mounted) return null;
 
   if (yesPressed) {
     return (
       <main className="relative flex flex-col items-center justify-center h-screen bg-pink-100 text-center p-6 overflow-hidden">
-        {/* Floating Hearts Background for Success Screen */}
         <div className="absolute inset-0 pointer-events-none">
           {[...Array(30)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute text-red-500 opacity-40 animate-float-up"
+            <div key={i} className="absolute text-red-500 opacity-40 animate-float-up"
               style={{
                 left: `${Math.random() * 100}%`,
                 bottom: `-50px`,
@@ -86,20 +102,11 @@ export default function ValentinePage() {
                 animationDelay: `${Math.random() * 5}s`,
                 animationDuration: `${Math.random() * 6 + 4}s`,
               }}
-            >
-              ❤️
-            </div>
+            >❤️</div>
           ))}
         </div>
-
-        <motion.img 
-          initial={{ scale: 0 }} animate={{ scale: 1 }}
-          src="/picture/PROFILE.png" alt="profile"
-          className="w-64 md:w-96 mb-4 rounded-xl shadow-2xl z-10"
-        />
-        <h1 className="text-4xl md:text-6xl font-bold text-red-600 animate-bounce z-10">
-          Yay! See you on the 14th! ❤️
-        </h1>
+        <motion.img initial={{ scale: 0 }} animate={{ scale: 1 }} src="/picture/PROFILE.png" alt="profile" className="w-64 md:w-96 mb-4 rounded-xl shadow-2xl z-10" />
+        <h1 className="text-4xl md:text-6xl font-bold text-red-600 animate-bounce z-10">Yay! See you on the 14th! ❤️</h1>
       </main>
     );
   }
@@ -107,12 +114,9 @@ export default function ValentinePage() {
   return (
     <main className="relative flex flex-col items-center justify-center h-screen w-full overflow-hidden bg-pink-50">
       
-      {/* FLOATING HEARTS EVERYWHERE */}
       <div className="absolute inset-0 pointer-events-none z-0">
         {[...Array(40)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute text-red-300 opacity-50 animate-float-up"
+          <div key={i} className="absolute text-red-300 opacity-50 animate-float-up"
             style={{
               left: `${Math.random() * 100}%`,
               bottom: `-10%`,
@@ -120,29 +124,16 @@ export default function ValentinePage() {
               animationDelay: `${Math.random() * 10}s`,
               animationDuration: `${Math.random() * 10 + 5}s`,
             }}
-          >
-            ❤️
-          </div>
+          >❤️</div>
         ))}
       </div>
 
       <div className="z-10 flex flex-col items-center mb-10">
-        <motion.img 
-          initial={{ scale: 0 }} animate={{ scale: 1 }}
-          src="/picture/MING.png" alt="cat"
-          className="w-48 md:w-80 mb-6 rounded-xl shadow-lg"
-        />
-        
+        <motion.img initial={{ scale: 0 }} animate={{ scale: 1 }} src="/picture/MING.png" alt="cat" className="w-48 md:w-80 mb-6 rounded-xl shadow-lg" />
         <div className="text-center px-4 w-full max-w-4xl">
-          <h1 className="text-4xl md:text-7xl font-bold text-black drop-shadow-[0_2px_10px_rgba(255,255,255,1)]">
-            Would you be my Valentine?
-          </h1>
+          <h1 className="text-4xl md:text-7xl font-bold text-black drop-shadow-[0_2px_10px_rgba(255,255,255,1)]">Would you be my Valentine?</h1>
           <AnimatePresence mode="wait">
-            <motion.p 
-              key={noCount}
-              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              className="text-2xl md:text-4xl text-black mt-6 font-bold italic drop-shadow-[0_2px_10px_rgba(255,255,255,1)]"
-            >
+            <motion.p key={noCount} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-2xl md:text-4xl text-black mt-6 font-bold italic drop-shadow-[0_2px_10px_rgba(255,255,255,1)]">
               {noCount >= phrases.length ? "please 🥺" : phrases[noCount]}
             </motion.p>
           </AnimatePresence>
@@ -150,11 +141,7 @@ export default function ValentinePage() {
       </div>
 
       <div className="flex flex-col items-center justify-center gap-6 z-20 w-full px-4">
-        <button
-          onClick={handleYes}
-          className="bg-green-500 hover:bg-green-600 text-white font-black rounded-full transition-all duration-500 shadow-2xl active:scale-95 flex items-center justify-center text-center"
-          style={getYesStyles()}
-        >
+        <button onClick={handleYes} className="bg-green-500 hover:bg-green-600 text-white font-black rounded-full transition-all duration-500 shadow-2xl active:scale-95 flex items-center justify-center text-center" style={getYesStyles()}>
           Yes
         </button>
 
@@ -162,10 +149,14 @@ export default function ValentinePage() {
           <button
             onClick={handleNoClick}
             className={`bg-red-500 hover:bg-red-700 text-white font-bold rounded-full shadow-xl transition-all duration-75 ${isMoved ? 'fixed' : 'relative'}`}
-            style={isMoved ? { 
-              left: `${noButtonPos.x}px`, top: `${noButtonPos.y}px`,
-              padding: '12px 24px', transform: 'translate(-50%, -50%)',
-              transition: 'none', fontSize: '16px', zIndex: 50
+            style={isMoved ? {
+              left: `${noButtonPos.x}px`, 
+              top: `${noButtonPos.y}px`,
+              padding: '12px 24px', 
+              transform: 'translate(-50%, -50%)',
+              transition: 'none', 
+              fontSize: '16px', 
+              zIndex: 50
             } : { padding: '12px 24px', fontSize: '16px' }}
           >
             No
